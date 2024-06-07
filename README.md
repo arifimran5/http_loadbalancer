@@ -27,7 +27,7 @@ This repository contains a simple HTTP load balancer written in Go and a test HT
 
 ### Running the Test Server
 
-1. Run the test server by executing the `server.go` file.
+1. Change the function name to `main` in `test-server.go` file. Run the test server by executing it.
 2. Pass the port number as a command-line argument, for example, `go run test-server.go 8080`.
 3. The test server will start listening on the specified port.
 
