@@ -4,17 +4,19 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/arifimran5/http_loadbalancer/loadbalancer"
+	"github.com/arifimran5/http_loadbalancer/internal/balancer"
 )
 
 func main() {
-	lb := loadbalancer.NewLoadBalancer()
+	lb := balancer.NewLoadBalancer()
 	lb.AddServer("http://localhost:8080")
 	lb.AddServer("http://localhost:8081")
 	lb.AddServer("http://localhost:8082")
 	lb.AddServer("http://localhost:8083")
-	lb.StartHealthCheck()
+
+	balancer.StartHealthCheck(lb)
 
 	http.HandleFunc("/", lb.ForwardRequest)
+	log.Println("Load balancer started at :8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
