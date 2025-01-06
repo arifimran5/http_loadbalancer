@@ -1,8 +1,8 @@
-# Simple HTTP Load Balancer
+# Switchblade : The Balancer
 
 ## Overview
 
-This repository contains a simple HTTP load balancer written in Go and a test HTTP server to demonstrate its functionality.
+It's a simple load balancer written in Go.
 
 ## Key Features
 
@@ -11,11 +11,6 @@ This repository contains a simple HTTP load balancer written in Go and a test HT
 - **Round-Robin Scheduling**: The load balancer uses a round-robin scheduling algorithm to distribute incoming requests across multiple servers.
 - **Server Health Checks**: The load balancer periodically checks the health of each server by sending HEAD requests. If a server is unhealthy, it is skipped until it becomes healthy again.
 - **Automatic Server Failover**: If a server becomes unhealthy, the load balancer automatically redirects requests to the next available server.
-- **Configurable Server List**: You can easily add or remove servers from the load balancer by calling the `AddServer` method.
-
-### Test Server
-
-- **Simple HTTP Server**: The test server is a basic HTTP server that responds with a "Hello, World!" message.
 
 ## Usage
 
