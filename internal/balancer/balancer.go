@@ -1,19 +1,18 @@
 package balancer
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
 
 type LoadBalancer struct {
+	strategy LoadBalancingStrategy
 	servers  []*Server
-	iterator int32
 }
 
-func NewLoadBalancer() *LoadBalancer {
+func NewLoadBalancer(strategy LoadBalancingStrategy) *LoadBalancer {
 	return &LoadBalancer{
-		iterator: 0,
+		strategy: strategy,
 	}
 }
 
@@ -27,23 +26,14 @@ func (lb *LoadBalancer) AddServer(host string) {
 }
 
 func (lb *LoadBalancer) ForwardRequest(res http.ResponseWriter, req *http.Request) {
-	server, err := lb.getHealthyServer()
-	if err != nil {
-		fmt.Println("Error getting healthy server:", err)
+	server := lb.strategy.GetNextServer(lb.servers)
+	if server == nil {
 		http.Error(res, "Service Unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	server.Proxy.ServeHTTP(res, req)
-}
 
-func (lb *LoadBalancer) getHealthyServer() (*Server, error) {
-	for i := 0; i < len(lb.servers); i++ {
-		nextIndex := (lb.iterator + 1) % int32(len(lb.servers))
-		server := lb.servers[nextIndex]
-		lb.iterator = nextIndex
-		if server.Health {
-			return server, nil
-		}
-	}
-	return nil, fmt.Errorf("no healthy servers found")
+	server.IncrementConnections()       // Increment active connection count before forwarding
+	defer server.DecrementConnections() // Decrement after response is sent
+
+	server.Proxy.ServeHTTP(res, req)
 }
