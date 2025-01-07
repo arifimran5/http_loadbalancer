@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/arifimran5/http_loadbalancer/internal/balancer"
 )
@@ -24,10 +25,11 @@ func main() {
 	}
 
 	lb := balancer.NewLoadBalancer(strategy)
-	lb.AddServer("http://localhost:8080")
-	lb.AddServer("http://localhost:8081")
-	lb.AddServer("http://localhost:8082")
-	lb.AddServer("http://localhost:8083")
+	responseTimeThreshold := 500 * time.Millisecond
+	lb.AddServer("http://localhost:8080", responseTimeThreshold)
+	lb.AddServer("http://localhost:8081", responseTimeThreshold)
+	lb.AddServer("http://localhost:8082", responseTimeThreshold)
+	lb.AddServer("http://localhost:8083", responseTimeThreshold)
 
 	balancer.StartHealthCheck(lb)
 

@@ -3,6 +3,7 @@ package balancer
 import (
 	"log"
 	"net/http"
+	"time"
 )
 
 type LoadBalancer struct {
@@ -16,8 +17,8 @@ func NewLoadBalancer(strategy LoadBalancingStrategy) *LoadBalancer {
 	}
 }
 
-func (lb *LoadBalancer) AddServer(host string) {
-	newServer, err := NewServer(host)
+func (lb *LoadBalancer) AddServer(host string, respTime time.Duration) {
+	newServer, err := NewServer(host, respTime)
 	if err != nil {
 		log.Printf("Error adding server %s: %v", host, err)
 		return
