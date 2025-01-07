@@ -1,0 +1,24 @@
+{
+	"load_balancer": {
+		"port": 8000,
+		"algorithm": "roundrobin",
+		"servers": [
+			{
+				"host": "http://localhost:8080",
+				"healthy_time_threshold": 200
+			},
+			{
+				"host": "http://localhost:8081",
+				"healthy_time_threshold": 200
+			},
+			{
+				"host": "http://localhost:8082",
+				"healthy_time_threshold": 200
+			},
+			{
+				"host": "http://localhost:8083",
+				"healthy_time_threshold": 200
+			}
+		]
+	}
+}
