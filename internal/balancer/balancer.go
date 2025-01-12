@@ -27,7 +27,7 @@ func (lb *LoadBalancer) AddServer(host string, respTime time.Duration) {
 }
 
 func (lb *LoadBalancer) ForwardRequest(res http.ResponseWriter, req *http.Request) {
-	server := lb.strategy.GetNextServer(lb.servers)
+	server := lb.strategy.GetNextServer(lb.servers, req)
 	if server == nil {
 		http.Error(res, "Service Unavailable", http.StatusServiceUnavailable)
 		return

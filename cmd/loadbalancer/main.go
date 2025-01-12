@@ -22,8 +22,10 @@ func main() {
 	switch conf.LoadBalancer.Algorithm {
 	case "roundrobin":
 		strategy = balancer.NewRoundRobin()
-	case "leastconnections":
+	case "least_conn":
 		strategy = balancer.NewLeastConnections()
+	case "iphash":
+		strategy = &balancer.IPHash{}
 	default:
 		log.Fatalf("Unknown algorithm: %s", conf.LoadBalancer.Algorithm)
 	}
