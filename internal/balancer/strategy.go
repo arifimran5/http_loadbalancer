@@ -1,12 +1,15 @@
 package balancer
 
 import (
+	"hash/fnv"
 	"math"
+	"net/http"
+	"strings"
 	"sync"
 )
 
 type LoadBalancingStrategy interface {
-	GetNextServer(servers []*Server) *Server
+	GetNextServer(servers []*Server, req *http.Request) *Server
 }
 
 type RoundRobin struct {
@@ -18,7 +21,7 @@ func NewRoundRobin() *RoundRobin {
 	return &RoundRobin{mu: &sync.Mutex{}}
 }
 
-func (rr *RoundRobin) GetNextServer(servers []*Server) *Server {
+func (rr *RoundRobin) GetNextServer(servers []*Server, req *http.Request) *Server {
 	rr.mu.Lock()
 	defer rr.mu.Unlock()
 
@@ -38,7 +41,7 @@ func NewLeastConnections() *LeastConnections {
 	return &LeastConnections{}
 }
 
-func (lc *LeastConnections) GetNextServer(servers []*Server) *Server {
+func (lc *LeastConnections) GetNextServer(servers []*Server, req *http.Request) *Server {
 	var leastLoadedServer *Server
 	minConn := math.MaxInt32
 
@@ -49,4 +52,20 @@ func (lc *LeastConnections) GetNextServer(servers []*Server) *Server {
 		}
 	}
 	return leastLoadedServer
+}
+
+type IPHash struct{}
+
+func (ih *IPHash) GetNextServer(servers []*Server, req *http.Request) *Server {
+	if len(servers) == 0 {
+		return nil
+	}
+
+	clientIP := req.RemoteAddr
+	ip := strings.Split(clientIP, ":")[0]
+	hash := fnv.New32a()
+	hash.Write([]byte(ip))
+
+	index := hash.Sum32() % uint32(len(servers))
+	return servers[index]
 }
