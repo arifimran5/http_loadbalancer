@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("Unknown algorithm: %s", conf.LoadBalancer.Algorithm)
 	}
 
-	lb := balancer.NewLoadBalancer(strategy)
+	lb := balancer.NewLoadBalancer(strategy, conf)
 	for _, server := range conf.LoadBalancer.Servers {
 		lb.AddServer(server.Host, time.Duration(server.Healthy_Time_Threshold)*time.Millisecond)
 	}

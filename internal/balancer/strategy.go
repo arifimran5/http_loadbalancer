@@ -3,8 +3,8 @@ package balancer
 import (
 	"hash/fnv"
 	"math"
+	"net"
 	"net/http"
-	"strings"
 	"sync"
 )
 
@@ -61,8 +61,10 @@ func (ih *IPHash) GetNextServer(servers []*Server, req *http.Request) *Server {
 		return nil
 	}
 
-	clientIP := req.RemoteAddr
-	ip := strings.Split(clientIP, ":")[0]
+	ip, _, err := net.SplitHostPort(req.RemoteAddr)
+	if err != nil {
+		return nil
+	}
 	hash := fnv.New32a()
 	hash.Write([]byte(ip))
 
