@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func TestServer() {
+func main() {
 	// a simple go server with port from command line
 	port := os.Args[1]
 	fmt.Println("Starting server on port", port)
